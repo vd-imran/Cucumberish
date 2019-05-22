@@ -363,6 +363,8 @@ OBJC_EXTERN NSString * stepDefinitionLineForStep(CCIStep * step);
 
 + (NSString *)exampleScenarioNameForScenarioName:(NSString *)scenarioName exampleAtIndex:(NSInteger)index example:(CCIExample*)example
 {
+    // HACK: We don't want to include example into the test case name
+    return scenarioName;
   NSMutableArray * nameExpansion = [NSMutableArray array];
   for(NSString * variable in example.exampleData.allKeys){
     NSString * replacement = example.exampleData[variable][index];
@@ -488,14 +490,10 @@ OBJC_EXTERN NSString * stepDefinitionLineForStep(CCIStep * step);
         if(![[Cucumberish instance] prettyNamesAllowed] && ![[Cucumberish instance] prettyScenarioNamesAllowed]){
             comparedName = [comparedName camleCaseStringWithFirstUppercaseCharacter:NO];
         }
-        if ([comparedName isEqualToString:scenarioName]){
-            [Cucumberish instance].scenarioCount++;
-            NSInvocation * inv = [Cucumberish invocationForScenario:s feature:feature featureClass:[self class]];
-            invocationTest =  [[self alloc] initWithInvocation:inv];
-            break;
-        }else if([s.keyword isEqualToString:(NSString *)kScenarioOutlineKeyword]){
+
+        if([s.keyword isEqualToString:(NSString *)kScenarioOutlineKeyword]){
           NSRange range = [scenarioName rangeOfCharacterFromSet:[NSCharacterSet decimalDigitCharacterSet] options:NSBackwardsSearch];
-            NSInteger exampleIndex = [[scenarioName substringWithRange:range] integerValue] - 1;
+            NSInteger exampleIndex = 0; // HACK
             NSString * scenarioOutlineName = [Cucumberish exampleScenarioNameForScenarioName:s.name exampleAtIndex:exampleIndex example:s.examples.firstObject];
             if(![[Cucumberish instance] prettyNamesAllowed] && ![[Cucumberish instance] prettyScenarioNamesAllowed]){
                 scenarioOutlineName = [scenarioOutlineName camleCaseStringWithFirstUppercaseCharacter:NO];
@@ -506,6 +504,11 @@ OBJC_EXTERN NSString * stepDefinitionLineForStep(CCIStep * step);
                 invocationTest =  [[self alloc] initWithInvocation:inv];
                 break;
             }
+        } else if ([comparedName isEqualToString:scenarioName]){
+            [Cucumberish instance].scenarioCount++;
+            NSInvocation * inv = [Cucumberish invocationForScenario:s feature:feature featureClass:[self class]];
+            invocationTest =  [[self alloc] initWithInvocation:inv];
+            break;
         }
     }
     return invocationTest;
