@@ -34,10 +34,29 @@
                                                                            options:NSRegularExpressionCaseInsensitive
                                                                              error:nil];
 
-    return [regex stringByReplacingMatchesInString:trimmedString
-                                           options:0
-                                             range:NSMakeRange(0, [self length])
-                                      withTemplate:@"_"];
+    NSString *delimitedString = [regex stringByReplacingMatchesInString:trimmedString
+                                                                options:0
+                                                                  range:NSMakeRange(0, [self length])
+                                                           withTemplate:@"_"];
+
+    NSMutableCharacterSet *safeCharacters = [[NSMutableCharacterSet alloc] init];
+    [safeCharacters formUnionWithCharacterSet:[NSCharacterSet alphanumericCharacterSet]];
+    [safeCharacters formUnionWithCharacterSet:[NSCharacterSet characterSetWithCharactersInString:@"_"]];
+
+    return [delimitedString stringByReplacingCharactersInSet:[safeCharacters invertedSet]
+                                                  withString:@""];
 }
 
+- (NSString *)stringByReplacingCharactersInSet:(NSCharacterSet *)charSet withString:(NSString *)aString {
+    NSMutableString *s = [NSMutableString stringWithCapacity:self.length];
+    for (NSUInteger i = 0; i < self.length; ++i) {
+        unichar c = [self characterAtIndex:i];
+        if (![charSet characterIsMember:c]) {
+            [s appendFormat:@"%C", c];
+        } else {
+            [s appendString:aString];
+        }
+    }
+    return s;
+}
 @end
