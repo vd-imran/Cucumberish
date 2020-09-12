@@ -723,7 +723,7 @@ void executeSteps(XCTestCase * testCase, NSArray * steps, id parentScenario, NSS
             [[CCIStepsManager instance] executeStep:step inTestCase:testCase];
         }
         @catch (CCIExeption *exception) {
-            if (retryCount >= 2) {
+            if (retryCount >= 4) {
                 [testCase recordFailureWithDescription:exception.reason atLocation:step.location expected:YES];
                 if([parentScenario isKindOfClass:[CCIScenarioDefinition class]]){
                     CCIScenarioDefinition * scenario = (CCIScenarioDefinition *)parentScenario;
