@@ -595,7 +595,7 @@ void executeDryRun(XCTestCase * self, NSArray <CCIStep *> * steps)
 
 void executeScenario(XCTestCase * self, SEL _cmd, CCIScenarioDefinition * scenario, CCIFeature * feature)
 {
-    self.continueAfterFailure = YES;
+    self.continueAfterFailure = NO;
 
     NSString * targetName = [[Cucumberish instance] testTargetFolderName] ? : [[[Cucumberish instance] containerBundle] infoDictionary][@"CFBundleName"];
     NSString * filePathPrefix = [NSString stringWithFormat:@"%@/%@", [Cucumberish instance].testTargetSrcRoot, targetName];
